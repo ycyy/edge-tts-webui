@@ -14,30 +14,39 @@ SUPPORTED_VOICES = {
     'shaanxi-Xiaoni-陕西晓妮': 'zh-CN-shaanxi-XiaoniNeural'
 }
 
+
+# 文本转语音
 async def textToSpeech(text, voices, rate, volume):
     output_file = "output.mp3"
     voices = SUPPORTED_VOICES[voices]
-    if(rate>=0):
-        rates = rate = "+"+str(rate) + "%"
+    if (rate >= 0):
+        rates = rate = "+" + str(rate) + "%"
     else:
         rates = str(rate) + "%"
-    if(volume>=0):
-        volumes = "+"+str(volume) + "%"
+    if (volume >= 0):
+        volumes = "+" + str(volume) + "%"
     else:
         volumes = str(volume) + "%"
-    communicate = edge_tts.Communicate(text, voices,rate=rates,volume=volumes,proxy=None)
+    communicate = edge_tts.Communicate(text,
+                                       voices,
+                                       rate=rates,
+                                       volume=volumes,
+                                       proxy=None)
     await communicate.save(output_file)
     audio_file = os.path.join(os.path.dirname(__file__), "output.mp3")
-    if(os.path.exists(audio_file)):
+    if (os.path.exists(audio_file)):
         return audio_file
     else:
         raise gr.Error("转换失败！")
         return FileNotFoundError
 
+
+# 清除转换结果
 def clearSpeech():
     return None
 
-with gr.Blocks(css="style.css",title="文本转语音") as demo:
+
+with gr.Blocks(css="style.css", title="文本转语音") as demo:
     gr.Markdown("""
     # 微软文本转语音
     调用edge-tts 进行转换
@@ -67,8 +76,8 @@ with gr.Blocks(css="style.css",title="文本转语音") as demo:
                                100,
                                step=1,
                                value=0,
-                               label="音量增减",
-                               info="加大或减小音量",
+                               label="音调增减",
+                               info="加大或减小音调",
                                interactive=True)
             audio = gr.Audio(label="输出",
                              interactive=False,
@@ -76,8 +85,8 @@ with gr.Blocks(css="style.css",title="文本转语音") as demo:
             clear = gr.Button("清除", elem_id="clear-btn")
             btn.click(fn=textToSpeech,
                       inputs=[text, voices, rate, volume],
-                      outputs=audio)
-            clear.click(fn=clearSpeech,outputs=audio)
+                      outputs=[audio])
+            clear.click(fn=clearSpeech, outputs=[audio])
 
 if __name__ == "__main__":
     demo.launch()

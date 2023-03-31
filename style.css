@@ -1,11 +1,10 @@
 .text-area {
-    height: 480px
+    height: 475px
 }
 
 .audio {
-    height: 156px;
+    height: 150px;
 }
-
 #submit-btn {
     color: #fff;
     background: #409eff;
