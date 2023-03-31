@@ -14,6 +14,11 @@ SUPPORTED_VOICES = {
     'shaanxi-Xiaoni-陕西晓妮': 'zh-CN-shaanxi-XiaoniNeural'
 }
 
+# 发音切换
+def changeVoice(voices):
+    example = SUPPORTED_VOICES[voices]
+    example_file = os.path.join(os.path.dirname(__file__), "example/"+example+".wav")
+    return example_file
 
 # 文本转语音
 async def textToSpeech(text, voices, rate, volume):
@@ -43,12 +48,15 @@ async def textToSpeech(text, voices, rate, volume):
 
 # 清除转换结果
 def clearSpeech():
-    return None
+    output_file = os.path.join(os.path.dirname(__file__), "output.mp3")
+    if (os.path.exists(output_file)):
+        os.remove(output_file)
+    return None, None
 
 
 with gr.Blocks(css="style.css", title="文本转语音") as demo:
     gr.Markdown("""
-    # 微软文本转语音
+    # 微软Edge文本转语音
     调用edge-tts 进行转换
     """)
     with gr.Row():
@@ -65,6 +73,13 @@ with gr.Blocks(css="style.css", title="文本转语音") as demo:
                                  label="发音",
                                  info="请选择发音人",
                                  interactive=True)
+            
+            example = gr.Audio(label="试听",
+                              value="example/zh-CN-XiaoxiaoNeural.wav",
+                              interactive=False,
+                              elem_classes="example")
+
+            voices.change(fn=changeVoice,inputs=voices,outputs=example)
             rate = gr.Slider(-100,
                              100,
                              step=1,
@@ -72,6 +87,7 @@ with gr.Blocks(css="style.css", title="文本转语音") as demo:
                              label="语速增减",
                              info="加快或减慢语速",
                              interactive=True)
+            
             volume = gr.Slider(-100,
                                100,
                                step=1,
@@ -86,7 +102,7 @@ with gr.Blocks(css="style.css", title="文本转语音") as demo:
             btn.click(fn=textToSpeech,
                       inputs=[text, voices, rate, volume],
                       outputs=[audio])
-            clear.click(fn=clearSpeech, outputs=[audio])
+            clear.click(fn=clearSpeech, outputs=[text, audio])
 
 if __name__ == "__main__":
     demo.launch()

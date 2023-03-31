@@ -1,9 +1,12 @@
 .text-area {
-    height: 475px
+    height: 586px;
 }
 
 .audio {
     height: 150px;
+}
+.example{
+    height: 100px;
 }
 #submit-btn {
     color: #fff;
